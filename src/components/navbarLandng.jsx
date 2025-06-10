@@ -1,8 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdFavorite } from "react-icons/md";
 
+
 const NavbarLanding = () => {
+  const navigate = useNavigate()
   return (
     <>
       <div className="sticky top-0 z-50 bg-white p-4 shadow-md">
@@ -61,11 +64,15 @@ const NavbarLanding = () => {
 
               <span className="text-2xl opacity-20">|</span>
 
-              <button className="h-10 px-4 border border-Primary text-Primary font-bold rounded-xl text-sm hover:bg-Primary hover:text-white transition">
-                Masuk
-              </button>
+                <button onClick={()=>{
+                  navigate("/Loginpage")
+                }} className="h-10 px-4 border border-Primary text-Primary font-bold rounded-xl text-sm hover:bg-Primary hover:text-white transition">
+                  Masuk
+                </button>
 
-              <button className="h-10 px-4 border border-Primary text-Primary font-bold rounded-xl text-sm hover:bg-Primary hover:text-white transition">
+              <button onClick={()=>{
+                navigate("/Registerpage")
+              }} className="h-10 px-4 border border-Primary text-Primary font-bold rounded-xl text-sm hover:bg-Primary hover:text-white transition">
                 Daftar
               </button>
             </div>
