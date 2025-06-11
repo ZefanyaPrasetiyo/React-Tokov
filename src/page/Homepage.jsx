@@ -1,13 +1,24 @@
 import React from "react";
 import { NavbarhomePage } from "../components/navbarhomePage";
-import { Routes, Route } from "react-router-dom";
+import { ImageSlider } from "../components/bannerPromo";
+import { Kategori } from "../components/kategori";
+import { Terlarishome } from "../components/Terlarishome";
+import { PencarianKamuhome } from "../components/PencariankamuHome";
+import { ListProdukhome } from "../components/ListprodukHome";
+import { Footer } from "../components/Footer";
 
 function Homepage() {
     return (
         <>
-        <Routes>
-            <Route path="/" element={<NavbarhomePage/>}/>
-        </Routes>
+        <div className="bg-Secondary">
+        <NavbarhomePage/>
+        <ImageSlider/>
+        <Kategori/>
+        <Terlarishome/>
+        <PencarianKamuhome/>
+        <ListProdukhome/>
+        <Footer/>
+        </div>
         </>
     )
 }

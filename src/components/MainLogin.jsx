@@ -4,25 +4,28 @@ import { Link } from 'react-router-dom';
 import Logo from '../assets/image/group 71.png';
 
 
-const Masuk = () => {
+const Signin = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Ambil data user dari localStorage
-const storedUser = JSON.parse(localStorage.getItem('user'));
+  const handleLogin = (e) => {
+    e.preventDefault();
 
-if (!storedUser) {
-  alert('Akun belum terdaftar. Silakan daftar terlebih dahulu.');
-  return;
-}
+    const storedUser = JSON.parse(localStorage.getItem('user'));
 
-if (email === storedUser.email && password === storedUser.password) {
-  alert('Login berhasil!');
-  navigate('/Homepage');
-} else {
-  alert('Email atau password salah!');
-}
+    if (!storedUser) {
+      alert('Akun belum terdaftar. Silakan daftar terlebih dahulu.');
+      return;
+    }
+
+    if (email === storedUser.email && password === storedUser.password) {
+      alert('Login berhasil!');
+      navigate('/home');
+    } else {
+      alert('Email atau password salah!');
+    }
+  };
 
 
   return (
@@ -40,7 +43,7 @@ if (email === storedUser.email && password === storedUser.password) {
 
       {/* Kanan */}
       <div className="w-full max-w-sm p-4 bg-white rounded-lg shadow-sm flex flex-col mb-12 sm:p-6 md:p-8 mt-10 md:mt-16 md:mr-24 font-sans">
-        <form id="formLogin" className="space-y-4" onSubmit={storedUser}>
+        <form id="formLogin" className="space-y-4" onSubmit={handleLogin}>
           <h5 className="text-xl font-medium text-gray-900">Masuk</h5>
 
           <input
@@ -109,4 +112,4 @@ if (email === storedUser.email && password === storedUser.password) {
   );
 }
 
-export { Masuk }
+export { Signin }
