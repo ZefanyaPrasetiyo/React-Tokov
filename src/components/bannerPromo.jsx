@@ -18,7 +18,7 @@ const ImageSlider = () => {
 
   // Update posisi slider saat index berubah
   useEffect(() => {
-    slideRef.current.style.transform = `translateX(-${currentIndex * (100 / images.length)}%)`;
+    slideRef.current.style.transform = `translateX(-${currentIndex * (200 / images.length)}%)`;
   }, [currentIndex]);
 
   // Tombol Prev
@@ -35,7 +35,7 @@ const ImageSlider = () => {
 
   return (
     <div className="relative">
-      <div className="overflow-hidden h-80 mt-2">
+      <div className="overflow-hidden h-80 mt-8">
         <div
           id="slider"
           className="flex transition-transform duration-500"

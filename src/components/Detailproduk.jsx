@@ -20,9 +20,11 @@ const DetailProduct = () => {
 
   const fetchRecommendedProducts = async (category) => {
     try {
-      const res = await fetch(`https://fakestoreapi.com/products/category/${category}`);
+      const res = await fetch(
+        `https://fakestoreapi.com/products/category/${category}`
+      );
       const data = await res.json();
-      console.log(data)
+      console.log(data);
       setRecommendedProducts(data.filter((p) => p.id !== product?.id));
     } catch (err) {
       console.error("Gagal fetch produk rekomendasi:", err);
@@ -83,14 +85,20 @@ const DetailProduct = () => {
         <div className="flex flex-row justify-between w-full">
           <div className="w-full lg:w-1/2 flex flex-col">
             <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center h-96">
-              <img src={product.image} alt={product.title} className="w-60 h-full object-contain" />
+              <img
+                src={product.image}
+                alt={product.title}
+                className="w-60 h-full object-contain"
+              />
             </div>
 
             {product.category.includes("clothing") && (
               <div className="mt-4 py-4 border-t border-gray-200">
                 <h2>Pilih ukuran</h2>
-                <div className="flex flex-row text-Primary
-                 text-lg font-bold py-4 space-x-8 items-start">
+                <div
+                  className="flex flex-row text-Primary
+                 text-lg font-bold py-4 space-x-8 items-start"
+                >
                   {["M", "L", "XL", "XXL"].map((ukuran) => (
                     <div
                       key={ukuran}
@@ -110,16 +118,24 @@ const DetailProduct = () => {
           </div>
 
           <div className="w-full lg:w-1/2 ml-8 mt-2">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.title}</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              {product.title}
+            </h1>
             <div className="flex flex-row items-center space-x-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" viewBox="0 0 24 24">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-8 h-8"
+                viewBox="0 0 24 24"
+              >
                 <path
                   fill="#dfbc00"
                   d="m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"
                 />
               </svg>
               <span className="text-lg">{product.rating.rate}</span>
-              <span className="text-lg text-gray-600 ml-4">Terjual {product.rating.count}</span>
+              <span className="text-lg text-gray-600 ml-4">
+                Terjual {product.rating.count}
+              </span>
               <svg
                 onClick={toggleWishlist}
                 xmlns="http://www.w3.org/2000/svg"
@@ -168,10 +184,21 @@ const DetailProduct = () => {
               </div>
 
               <div className="flex flex-col gap-3 mt-4 space-y-2">
-                <button onClick={()=>{
-                    localStorage.setItem('beliSekarang', JSON.stringify(product));
+                <button
+                  onClick={() => {
+                    const dataBeli = {
+                      ...product,
+                      quantity,
+                      size: selectedSize,
+                    };
+                    localStorage.setItem(
+                      "beliSekarang",
+                      JSON.stringify(dataBeli)
+                    );
                     navigate(`/checkout/${product.id}`);
-                }} className="beliSekarang h-10 w-full p-1 border border-Primary text-Primary font-bold rounded-md text-sm hover:bg-Primary hover:text-white transition cursor-pointer">
+                  }}
+                  className="beliSekarang h-10 w-full p-1 border border-Primary text-Primary font-bold rounded-md text-sm hover:bg-Primary hover:text-white transition cursor-pointer"
+                >
                   Beli Sekarang
                 </button>
                 <button

@@ -81,7 +81,7 @@ const PencarianKamuhome = () => {
               className="bg-white w-60 shadow-xl p-4 flex flex-col justify-between transform transition duration-300 hover:scale-105 cursor-pointer"
               onClick={() => {
                 localStorage.setItem('detailProduk', JSON.stringify(product));
-                navigate("/detail"); // sesuaikan path dengan routing detail produk
+                navigate("/detail/:id");
               }}
             >
               <div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 
 const formatHarga = (nominal) => {
-  return `$ ${Number(nominal).toLocaleString("id-ID")}`;
+  return `Rp ${Number(nominal * 16000).toLocaleString("id-ID")}`;
 };
 
 const Pembayaran = () => {
@@ -12,29 +12,22 @@ const Pembayaran = () => {
   const pilihanRef = useRef([]);
 
   useEffect(() => {
-    const dataArray = JSON.parse(localStorage.getItem("beliSekarang"));
-    const dataSingle = JSON.parse(localStorage.getItem("beliSekarang"));
+  const data = JSON.parse(localStorage.getItem("beliSekarang"));
 
-    let total = 0;
-    let produk = [];
+  if (data) {
+    const quantity = data.quantity || 1;
+    const subtotal = data.price * quantity;
 
-    if (Array.isArray(dataArray) && dataArray.length > 0) {
-      produk = dataArray.map((item) => {
-        const jumlah = item.jumlah || 1;
-        const subtotal = item.price * jumlah;
-        total += subtotal;
-        return { ...item, jumlah, subtotal };
-      });
-    } else if (dataSingle) {
-      const jumlah = dataSingle.jumlah || 1;
-      const subtotal = dataSingle.price * jumlah;
-      total = subtotal;
-      produk = [{ ...dataSingle, jumlah, subtotal }];
-    }
+    const produk = [{
+      ...data,
+      quantity,
+      subtotal
+    }];
 
     setProdukList(produk);
-    setTotalHarga(total);
-  }, []);
+    setTotalHarga(subtotal);
+  }
+}, []);
 
   const handleBayar = () => {
     if (totalHarga <= 0) {
@@ -99,7 +92,7 @@ const Pembayaran = () => {
                     />
                     <div className="flex flex-col w-full">
                       <h2 className="font-semibold text-lg text-gray-700">{produk.title}</h2>
-                      <p className="text-gray-600">Jumlah: {produk.jumlah}</p>
+                      <p className="text-gray-600">Jumlah: {produk.quantity}</p>
                       <p className="text-Primary font-bold mt-1">
                         Harga Satuan: {formatHarga(produk.price)}
                       </p>
