@@ -22,6 +22,7 @@ const DetailProduct = () => {
     try {
       const res = await fetch(`https://fakestoreapi.com/products/category/${category}`);
       const data = await res.json();
+      console.log(data)
       setRecommendedProducts(data.filter((p) => p.id !== product?.id));
     } catch (err) {
       console.error("Gagal fetch produk rekomendasi:", err);
@@ -167,7 +168,10 @@ const DetailProduct = () => {
               </div>
 
               <div className="flex flex-col gap-3 mt-4 space-y-2">
-                <button className="beliSekarang h-10 w-full p-1 border border-Primary text-Primary font-bold rounded-md text-sm hover:bg-Primary hover:text-white transition cursor-pointer">
+                <button onClick={()=>{
+                    localStorage.setItem('beliSekarang', JSON.stringify(product));
+                    navigate(`/checkout/${product.id}`);
+                }} className="beliSekarang h-10 w-full p-1 border border-Primary text-Primary font-bold rounded-md text-sm hover:bg-Primary hover:text-white transition cursor-pointer">
                   Beli Sekarang
                 </button>
                 <button
