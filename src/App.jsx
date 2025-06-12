@@ -8,6 +8,7 @@ import { Register } from './page/RegisterPage'
 import { Homepage } from './page/Homepage'
 import { Detail } from './page/DetailPage'
 import { Checkout } from './page/CheckoutPage'
+import { Cart } from './page/Cartpage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import React from 'react'
 
@@ -22,6 +23,7 @@ function App () {
         <Route path="/home" element={<Homepage/>}/>
         <Route path="/detail/:id" element={<Detail />} />
         <Route path="/checkout/:id" element={<Checkout />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
       </BrowserRouter>
     </>

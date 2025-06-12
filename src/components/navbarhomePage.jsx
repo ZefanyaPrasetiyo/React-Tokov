@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdFavorite } from "react-icons/md";
 
 const NavbarhomePage = () => {
+  const navigate = useNavigate();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const toggleRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -81,7 +83,9 @@ const NavbarhomePage = () => {
             </div>
 
             <div className="flex items-center gap-8">
-              <button>
+              <button onClick={()=>{
+                navigate('/cart')
+              }} >
                 <FaShoppingCart className="text-3xl text-Primary hover:text-blue-800 transition-duration-300" />
               </button>
               <button>

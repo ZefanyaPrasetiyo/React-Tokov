@@ -12,22 +12,21 @@ const Pembayaran = () => {
   const pilihanRef = useRef([]);
 
   useEffect(() => {
-  const data = JSON.parse(localStorage.getItem("beliSekarang"));
+    const data = JSON.parse(localStorage.getItem("produkBeli"));
 
-  if (data) {
-    const quantity = data.quantity || 1;
-    const subtotal = data.price * quantity;
+    if (Array.isArray(data)) {
+      const produk = data.map(item => {
+        const quantity = item.jumlah || item.quantity || 1;
+        const subtotal = item.price * quantity;
+        return { ...item, quantity, subtotal };
+      });
 
-    const produk = [{
-      ...data,
-      quantity,
-      subtotal
-    }];
+      const total = produk.reduce((acc, curr) => acc + curr.subtotal, 0);
 
-    setProdukList(produk);
-    setTotalHarga(subtotal);
-  }
-}, []);
+      setProdukList(produk);
+      setTotalHarga(total);
+    }
+  }, []);
 
   const handleBayar = () => {
     if (totalHarga <= 0) {
@@ -38,7 +37,7 @@ const Pembayaran = () => {
     alert(`Pembayaran sebesar ${formatHarga(totalHarga)} sedang diproses...`);
     setTimeout(() => {
       alert("✅ Pembayaran berhasil!");
-      // localStorage.clear(); // jika ingin clear data
+      // localStorage.clear();
     }, 2000);
   };
 
