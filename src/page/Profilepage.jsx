@@ -1,19 +1,18 @@
 import React from "react";
 import { NavbarhomePage } from "../components/navbarhomePage";
-import { DetailProduct } from "../components/Detailproduk";
-import { PencarianKamuhome } from "../components/PencariankamuHome";
+import { Profilemain } from "../components/ProfileMain";
 import { Footer } from "../components/Footer";
 
-const Detail = () => {
-    return(
+const Profile = () => {
+    return (
         <>
         <div className="bg-Secondary">
         < NavbarhomePage />
-        < DetailProduct/>
-        < PencarianKamuhome />
+        < Profilemain />
         < Footer />
         </div>
         </>
     )
 }
-export { Detail }
+
+export { Profile }

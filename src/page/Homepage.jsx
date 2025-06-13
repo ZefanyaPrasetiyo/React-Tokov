@@ -5,6 +5,7 @@ import { Kategori } from "../components/kategori";
 import { Terlarishome } from "../components/Terlarishome";
 import { PencarianKamuhome } from "../components/PencariankamuHome";
 import { ListProdukhome } from "../components/ListprodukHome";
+import { Alamatuser } from "../components/alamat";
 import { Footer } from "../components/Footer";
 
 function Homepage() {
@@ -12,6 +13,7 @@ function Homepage() {
         <>
         <div className="bg-Secondary">
         <NavbarhomePage/>
+        <Alamatuser/>
         <ImageSlider/>
         <Kategori/>
         <Terlarishome/>

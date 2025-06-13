@@ -1,5 +1,6 @@
 import React from "react";
 import { FaLocationDot } from "react-icons/fa6";
+import { useState } from "react";
 
 const Alamatuser = () => {
   return (
@@ -25,7 +26,7 @@ const Alamatuser = () => {
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <FaLocationDot className="text-2xl text-Primary" />
-            <p id="alamatUser">Dikirim ke JL. Bedahan</p>
+            <p id="alamatUser"></p>
           </div>
         </div>
       </div>

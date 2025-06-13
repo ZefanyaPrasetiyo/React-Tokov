@@ -13,22 +13,31 @@ const DetailProduct = () => {
     const storedProduct = JSON.parse(localStorage.getItem("detailProduk"));
     if (storedProduct) {
       setProduct(storedProduct);
-      fetchRecommendedProducts(storedProduct.category);
       checkWishlist(storedProduct.id);
     }
   }, []);
 
-  const fetchRecommendedProducts = async (category) => {
-    try {
-      const res = await fetch(
-        `https://fakestoreapi.com/products/category/${category}`
-      );
-      const data = await res.json();
-      console.log(data);
-      setRecommendedProducts(data.filter((p) => p.id !== product?.id));
-    } catch (err) {
-      console.error("Gagal fetch produk rekomendasi:", err);
+  const tambahKeranjang = (product) => {
+    const produkBaru = {
+      id: product.id,
+      title: product.title,
+      image: product.image,
+      price: product.price,
+      jumlah: quantity,
+      size: selectedSize
+    };
+
+    let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
+    const produkLama = keranjang.find(item => item.id === produkBaru.id && item.size === produkBaru.size);
+
+    if (produkLama) {
+      produkLama.jumlah += quantity;
+    } else {
+      keranjang.push(produkBaru);
     }
+
+    localStorage.setItem('keranjang', JSON.stringify(keranjang));
+    alert('Produk berhasil ditambahkan ke keranjang!');
   };
 
   const checkWishlist = (id) => {
@@ -47,27 +56,6 @@ const DetailProduct = () => {
 
     localStorage.setItem("wishlist", JSON.stringify(newWishlist));
     setIsFavorite(!exists);
-  };
-
-  const addToCart = () => {
-    if (!selectedSize && product.category.includes("clothing")) {
-      alert("Pilih ukuran terlebih dahulu!");
-      return;
-    }
-
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingIndex = cart.findIndex(
-      (item) => item.id === product.id && item.size === selectedSize
-    );
-
-    if (existingIndex !== -1) {
-      cart[existingIndex].quantity += quantity;
-    } else {
-      cart.push({ ...product, size: selectedSize, quantity });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Produk berhasil ditambahkan ke keranjang!");
   };
 
   const handleSizeClick = (size) => {
@@ -93,18 +81,17 @@ const DetailProduct = () => {
             </div>
 
             {product.category.includes("clothing") && (
-              <div className="mt-4 py-4 border-t border-gray-200">
+              <div className="ml-8 mt-4 py-4 border-t border-gray-200">
                 <h2>Pilih ukuran</h2>
                 <div
-                  className="flex flex-row text-Primary
-                 text-lg font-bold py-4 space-x-8 items-start"
+                  className="flex flex-row text-Primary text-lg font-bold py-4 space-x-8 items-start"
                 >
                   {["M", "L", "XL", "XXL"].map((ukuran) => (
                     <div
                       key={ukuran}
-                      className={`ukuran border border-4 rounded-xl w-12 h-12 text-center p-2 cursor-pointer ${
+                      className={`ukuran border-4 rounded-xl w-12 h-12 p-1 text-center cursor-pointer ${
                         selectedSize === ukuran
-                          ? "bgPrimary text-white border-Primary"
+                          ? "bgPrimary text-white bg-Primary border-Primary"
                           : "border-Primary hover:bg-Primary hover:text-white"
                       }`}
                       onClick={() => handleSizeClick(ukuran)}
@@ -195,14 +182,14 @@ const DetailProduct = () => {
                       "beliSekarang",
                       JSON.stringify(dataBeli)
                     );
-                    navigate(`/checkout/${product.id}`);
+                    navigate('/chckout/:id');
                   }}
                   className="beliSekarang h-10 w-full p-1 border border-Primary text-Primary font-bold rounded-md text-sm hover:bg-Primary hover:text-white transition cursor-pointer"
                 >
                   Beli Sekarang
                 </button>
                 <button
-                  onClick={addToCart}
+                  onClick={() => tambahKeranjang(product)}
                   className="tambahKeranjang h-10 w-full p-1 border border-Primary text-Primary font-bold rounded-md text-sm hover:bg-Primary hover:text-white transition cursor-pointer"
                 >
                   + Keranjang

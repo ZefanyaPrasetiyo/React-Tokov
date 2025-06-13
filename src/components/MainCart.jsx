@@ -1,200 +1,182 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Maincart = () => {
   const navigate = useNavigate();
+  const [keranjang, setKeranjang] = useState([]);
+  const [terpilih, setTerpilih] = useState([]);
+  const [semuaTercentang, setSemuaTercentang] = useState(false);
 
   useEffect(() => {
-    const keranjang = JSON.parse(localStorage.getItem("keranjang")) || [];
+    const data = JSON.parse(localStorage.getItem("keranjang")) || [];
+    setKeranjang(data);
+  }, []);
 
-    const keranjangContainer = document.getElementById("KeranjangProduk");
-    const totalProduk = document.getElementById("jumlahTotalProduk");
-    const totalHarga = document.getElementById("jumlahHargatotal");
-    const kotakPesan = document.getElementById("pesan-kosong");
-    const check = document.getElementById("bagianCheck");
-    const checkboxPilihSemua = document.getElementById("pilihSemua");
+  const updateKeranjang = (updated) => {
+    localStorage.setItem("keranjang", JSON.stringify(updated));
+    setKeranjang(updated);
+  };
 
-    if (!checkboxPilihSemua) return;
-
-    function renderKeranjang() {
-      keranjangContainer.innerHTML = "";
-      if (keranjang.length === 0) {
-        kotakPesan.classList.remove("hidden");
-        check.classList.add("hidden");
-        return;
-      } else {
-        kotakPesan.classList.add("hidden");
-      }
-
-      keranjang.forEach((produk, index) => {
-        const hargaTotal = produk.jumlah * produk.price;
-        const item = document.createElement("div");
-        item.className = "w-full max-w-7xl mx-auto border-b space-y-12";
-        item.innerHTML = `
-          <div class="flex flex-row items-center justify-between p-4">
-            <div class="flex items-center ml-4 gap-4 w-1/3">
-              <input type="checkbox" class="h-5 w-5 checkboxProduk" data-index="${index}" data-harga="${produk.price}" />
-              <img src="${produk.image}" alt="${produk.title}" class="w-20 h-20 object-cover rounded" />
-              <p class="text-sm text-gray-800 w-36 truncate" title="${produk.title}">${produk.title}</p>
-            </div>
-            <div class="flex items-center justify-between w-2/3 pr-4 space-x-32">
-              <h1 class="w-20 text-center font-bold text-gray-600">$${produk.price.toLocaleString("en-US")}</h1>
-              <div class="w-32 flex justify-center items-center gap-1">
-                <p class="plus border w-8 text-center cursor-pointer">+</p>
-                <p class="jumlah border w-8 text-center">${produk.jumlah}</p>
-                <p class="minus border w-8 text-center cursor-pointer">-</p>
-              </div>
-              <h1 class="w-24 text-center font-bold text-gray-600">$${hargaTotal.toLocaleString("en-US")}</h1>
-              <h1 class="hapus w-20 text-center font-bold text-[var(--primary-color)] hover:underline cursor-pointer">Hapus</h1>
-            </div>
-          </div>
-        `;
-
-        item.querySelector(".plus").addEventListener("click", () => {
-          produk.jumlah++;
-          updateKeranjang();
-        });
-
-        item.querySelector(".minus").addEventListener("click", () => {
-          if (produk.jumlah > 1) {
-            produk.jumlah--;
-            updateKeranjang();
-          }
-        });
-
-        item.querySelector(".hapus").addEventListener("click", () => {
-          keranjang.splice(index, 1);
-          updateKeranjang();
-        });
-
-        const checkbox = item.querySelector(".checkboxProduk");
-        checkbox.addEventListener("change", updateTotalTercentang);
-
-        keranjangContainer.appendChild(item);
-      });
-
-      updateTotalTercentang();
-      check.classList.remove("hidden");
+  const handleJumlah = (index, delta) => {
+    const updated = [...keranjang];
+    if (updated[index].jumlah + delta >= 1) {
+      updated[index].jumlah += delta;
+      updateKeranjang(updated);
     }
+  };
 
-    function updateKeranjang() {
-      localStorage.setItem("keranjang", JSON.stringify(keranjang));
-      renderKeranjang();
+  const handleHapus = (index) => {
+    const updated = [...keranjang];
+    updated.splice(index, 1);
+    updateKeranjang(updated);
+  };
+
+  const handleCheckbox = (index) => {
+    const updated = [...terpilih];
+    const produk = keranjang[index];
+    const existIndex = updated.findIndex(
+      (item) => item.id === produk.id && item.size === produk.size
+    );
+    if (existIndex > -1) {
+      updated.splice(existIndex, 1);
+    } else {
+      updated.push(produk);
     }
+    setTerpilih(updated);
+    setSemuaTercentang(updated.length === keranjang.length);
+  };
 
-    function updateTotalTercentang() {
-      const checkboxes = document.querySelectorAll(".checkboxProduk:checked");
-      let totalQty = 0;
-      let totalHargaAll = 0;
-
-      checkboxes.forEach((cb) => {
-        const index = parseInt(cb.dataset.index);
-        const produk = keranjang[index];
-        totalQty += produk.jumlah;
-        totalHargaAll += produk.jumlah * produk.price;
-      });
-
-      totalProduk.innerText = `(${totalQty} Produk)`;
-      totalHarga.innerText = `$${totalHargaAll.toLocaleString("en-US")}`;
-
-      if (checkboxes.length > 0) {
-        check.classList.remove("hidden");
-      } else {
-        check.classList.add("hidden");
-      }
+  const handlePilihSemua = () => {
+    if (semuaTercentang) {
+      setTerpilih([]);
+      setSemuaTercentang(false);
+    } else {
+      setTerpilih([...keranjang]);
+      setSemuaTercentang(true);
     }
+  };
 
-    checkboxPilihSemua.addEventListener("change", () => {
-      const semuaCheckbox = document.querySelectorAll(".checkboxProduk");
-      semuaCheckbox.forEach((cb) => {
-        cb.checked = checkboxPilihSemua.checked;
-      });
-      updateTotalTercentang();
-    });
+  const handleCheckout = () => {
+    if (terpilih.length === 0) {
+      alert("Pilih produk terlebih dahulu untuk checkout.");
+      
+      return;
+    }
+    localStorage.setItem('produkBeli', JSON.stringify(terpilih))
+    navigate('/checkout')
+    const indexTerhapus = terpilih.map((p) =>
+      keranjang.findIndex((k) => k.id === p.id && k.size === p.size)
+    );
+    const sisa = [...keranjang];
+    indexTerhapus.sort((a, b) => b - a).forEach((i) => sisa.splice(i, 1));
+    localStorage.setItem("produkBeli", JSON.stringify(terpilih));
+    localStorage.setItem("keranjang", JSON.stringify(sisa));
+    setKeranjang(sisa);
+    setTerpilih([]);
+    navigate("/checkout/:id");
+  };
 
-    document.getElementById("checkButton").addEventListener("click", () => {
-      const checkboxTercentang = document.querySelectorAll(".checkboxProduk:checked");
-      if (checkboxTercentang.length === 0) {
-        alert("Pilih produk terlebih dahulu untuk checkout.");
-        return;
-      }
-
-      const produkTerpilih = [];
-      const indexTerhapus = [];
-
-      checkboxTercentang.forEach((cb) => {
-        const index = parseInt(cb.dataset.index);
-        produkTerpilih.push(keranjang[index]);
-        indexTerhapus.push(index);
-      });
-
-      indexTerhapus.sort((a, b) => b - a).forEach((index) => {
-        keranjang.splice(index, 1);
-      });
-
-      localStorage.setItem("beliSekarang", JSON.stringify(produkTerpilih[0]));
-      localStorage.setItem("keranjang", JSON.stringify(keranjang));
-
-      navigate("/checkout/" + produkTerpilih[0].id);
-    });
-
-    renderKeranjang();
-  }, [navigate]);
+  const totalQty = terpilih.reduce((acc, item) => acc + item.jumlah, 0);
+  const totalHarga = terpilih.reduce((acc, item) => acc + item.jumlah * item.price, 0);
 
   return (
-    <>
-      <div>
-        <section>
-          <div className="bg-white w-full shadow-md">
-            <div className="w-full max-w-7xl mx-auto">
-              <div className="flex flex-row items-center justify-between p-4">
-                <div className="p-4 h-16 flex flex-row items-center gap-12">
-                  <h1 className="font-bold text-lg text-gray-600">Pilih</h1>
-                  <h1 className="font-bold text-lg text-gray-600">Produk</h1>
-                </div>
-                <div className="flex flex-row items-center gap-2 p-4 px-5 space-x-32">
-                  <h1 className="font-bold text-lg text-gray-600">Harga Satuan</h1>
-                  <h1 className="font-bold text-lg text-gray-600">Kuantitas</h1>
-                  <h1 className="font-bold text-lg text-gray-600">Total Harga</h1>
-                  <h1 className="font-bold text-lg text-gray-600">Aksi</h1>
-                </div>
+    <div className="w-full mx-auto py-6">
+      {keranjang.length === 0 ? (
+        <p className="text-center text-gray-500 mt-52">Kamu belum memasukkan produk ke keranjang.</p>
+      ) : (
+        <>
+          <div className="bg-white shadow-md rounded mb-1">
+            <div className="flex flex-row items-center justify-between p-4">
+              <div className="flex items-center gap-12 ">
+                <input
+                  type="checkbox"
+                  className="h-6 w-6"
+                  checked={semuaTercentang}
+                  onChange={handlePilihSemua}
+                />
+                <h1 className="font-bold text-lg text-gray-600">Pilih Semua</h1>
+              </div>
+              <div className="flex flex-row items-center gap-2 px-5 space-x-32">
+                <h1 className="font-bold text-lg text-gray-600">Harga Satuan</h1>
+                <h1 className="font-bold text-lg text-gray-600">Kuantitas</h1>
+                <h1 className="font-bold text-lg text-gray-600">Total Harga</h1>
+                <h1 className="font-bold text-lg text-gray-600">Aksi</h1>
               </div>
             </div>
           </div>
-        </section>
-        <div id="pesan-kosong" className="text-center text-gray-500 mt-52 hidden">
-          Kamu belum memasukkan produk ke keranjang.
-        </div>
-        <div className="bg-white w-full shadow-md">
-          <div className="w-full max-w-7xl mx-auto">
-            <div id="KeranjangProduk" className="divide-y divide-gray-100"></div>
-          </div>
-        </div>
-        <section>
-          <div id="bagianCheck" className="bg-white w-full mt-4 shadow-md hidden">
-            <div className="w-full max-w-7xl mx-auto">
-              <div className="flex flex-row items-center justify-between p-4">
-                <div className="p-4 h-16 flex flex-row items-center gap-12">
-                  <input id="pilihSemua" type="checkbox" className="h-6 w-6" />
-                  <h1 className="font-bold text-lg text-gray-600">Pilih Semua</h1>
+
+          <div className="bg-white w-full shadow-md divide-y divide-gray-100">
+            {keranjang.map((produk, index) => (
+              <div key={index} className="flex flex-row items-center justify-between p-4 roumded-md">
+                <div className="flex items-center ml-4 gap-4 w-full">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5"
+                    checked={terpilih.includes(produk)}
+                    onChange={() => handleCheckbox(index)}
+                  />
+                  <img
+                    src={produk.image}
+                    alt={produk.title}
+                    className="w-20 h-20 rounded"
+                  />
+                  <p className="text-sm text-gray-800 w-36 truncate" title={produk.title}>
+                    {produk.title}
+                  </p>
                 </div>
-                <div className="flex flex-row items-center gap-2 px-5">
-                  <h1 className="font-bold text-lg text-gray-600">Total Produk</h1>
-                  <h1 id="jumlahTotalProduk" className="font-bold text-lg text-gray-600">(0 Produk)</h1>
-                  <h1 id="jumlahHargatotal" className="font-bold text-lg text-[var(--primary-color)]">Rp0</h1>
-                  <button onClick={()=>{
-                    localStorage.setItem('produkBeli', JSON.stringify(produkTerpilih))
-                    navigate('/checkout')
-                  }} id="checkButton" className="beliSekarang h-10 w-40 p-1 border border-[var(--primary-color)] text-[var(--primary-color)] font-bold rounded-md text-sm hover:bg-[var(--primary-color)] hover:text-white transition">
-                    CheckOut
-                  </button>
+                <div className="flex items-center justify-between w-2/3 pr-4 space-x-32">
+                  <h1 className="w-20 text-center font-bold text-gray-600">
+                    ${produk.price.toLocaleString("en-US")}
+                  </h1>
+                  <div className="w-32 flex justify-center items-center gap-1">
+                    <p
+                      className="plus border w-8 text-center cursor-pointer"
+                      onClick={() => handleJumlah(index, 1)}
+                    >
+                      +
+                    </p>
+                    <p className="jumlah border w-8 text-center">{produk.jumlah}</p>
+                    <p
+                      className="minus border w-8 text-center cursor-pointer"
+                      onClick={() => handleJumlah(index, -1)}
+                    >
+                      -
+                    </p>
+                  </div>
+                  <h1 className="w-24 text-center font-bold text-gray-600">
+                    ${(produk.jumlah * produk.price).toLocaleString("en-US")}
+                  </h1>
+                  <h1
+                    className="hapus w-20 text-center font-bold text-Primary hover:underline cursor-pointer"
+                    onClick={() => handleHapus(index)}
+                  >
+                    Hapus
+                  </h1>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
-        </section>
-      </div>
-    </>
+
+          <div className="flex justify-between items-center mt-2 p-4 shadow-m bg-white rounded-2xl">
+            <div className="flex items-center gap-4">
+              <h1 className="font-bold text-lg text-gray-600">
+                Total Produk: <span id="jumlahTotalProduk">({totalQty} Produk)</span>
+              </h1>
+              <h1 className="font-bold text-lg text-Primary">
+                <span id="jumlahHargatotal">${totalHarga.toLocaleString("en-US")}</span>
+              </h1>
+            </div>
+            <button
+              id="checkButton"
+              onClick={handleCheckout}
+              className="beliSekarang h-10 w-40 p-1 border border-Primary text-Primary font-bold rounded-md text-sm hover:bg-Primary hover:text-white transition"
+            >
+              CheckOut
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 

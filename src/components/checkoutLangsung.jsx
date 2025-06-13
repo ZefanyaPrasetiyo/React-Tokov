@@ -4,7 +4,7 @@ const formatHarga = (nominal) => {
   return `Rp ${Number(nominal * 16000).toLocaleString("id-ID")}`;
 };
 
-const Pembayaran = () => {
+const PembayaranLangsung = () => {
   const [produkList, setProdukList] = useState([]);
   const [totalHarga, setTotalHarga] = useState(0);
   const [metodeDipilih, setMetodeDipilih] = useState(null);
@@ -12,10 +12,10 @@ const Pembayaran = () => {
   const pilihanRef = useRef([]);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("produkBeli"));
+    const data = JSON.parse(localStorage.getItem("beliSekarang"));
 
-    if (Array.isArray(data)) {
-      const produk = data.map((item) => {
+    if (data) {
+      const produk = [data].map((item) => {
         const quantity = item.jumlah || item.quantity || 1;
         const subtotal = item.price * quantity;
         return { ...item, quantity, subtotal };
@@ -54,7 +54,9 @@ const Pembayaran = () => {
   return (
     <div className="max-w-7xl mx-auto mt-6 px-4 lg:px-0">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Kolom Kiri */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Alamat */}
           <section className="bg-white rounded-2xl p-6 shadow-lg">
             <div className="flex justify-between items-start">
               <div>
@@ -73,6 +75,7 @@ const Pembayaran = () => {
             </div>
           </section>
 
+          {/* Detail Produk */}
           <section className="bg-white rounded-2xl p-6 shadow-lg">
             <h2 className="font-bold text-xl mb-2 text-gray-800">
               Detail Pemesanan
@@ -113,6 +116,7 @@ const Pembayaran = () => {
           </section>
         </div>
 
+        {/* Kolom Kanan */}
         <div className="sticky top-0 z-50 bg-white rounded-2xl p-6 shadow-lg h-fit">
           <h2 className="text-lg font-bold mb-4 text-center text-gray-800">
             Metode Pembayaran
@@ -129,18 +133,20 @@ const Pembayaran = () => {
             id="listPembayaran"
             className="flex flex-col space-y-4 font-medium text-gray-700 cursor-pointer"
           >
-            {["OVO", "ALFAMART", "GOPAY", "COD", "DANA"].map((metode, index) => (
-              <p
-                key={index}
-                ref={(el) => (pilihanRef.current[index] = el)}
-                onClick={() => handlePilihMetode(index)}
-                className={`hover:bg-gray-100 p-2 rounded-md transition ${
-                  metodeDipilih === index ? "text-Primary" : ""
-                }`}
-              >
-                {metode}
-              </p>
-            ))}
+            {["OVO", "ALFAMART", "GOPAY", "COD", "DANA"].map(
+              (metode, index) => (
+                <p
+                  key={index}
+                  ref={(el) => (pilihanRef.current[index] = el)}
+                  onClick={() => handlePilihMetode(index)}
+                  className={`hover:bg-gray-100 p-2 rounded-md transition ${
+                    metodeDipilih === index ? "text-Primary" : ""
+                  }`}
+                >
+                  {metode}
+                </p>
+              )
+            )}
           </div>
 
           <div className="border-t mt-6 pt-4">
@@ -161,4 +167,4 @@ const Pembayaran = () => {
   );
 };
 
-export { Pembayaran };
+export { PembayaranLangsung };

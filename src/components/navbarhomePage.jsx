@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdFavorite } from "react-icons/md";
@@ -8,13 +8,21 @@ const NavbarhomePage = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const toggleRef = useRef(null);
   const dropdownRef = useRef(null);
+  const [nama, setnama] = useState("")
+
+  useEffect(()=>{
+    const dataUser = JSON.parse(localStorage.getItem('user'))
+    if (dataUser && dataUser.nama) {
+      setnama(dataUser.nama)
+    }
+  })
 
   const handleToggleClick = () => {
     setDropdownVisible(!dropdownVisible);
   };
 
   const handleLihatProfil = () => {
-    window.location.href = "../html/Profile.html";
+    navigate('/prfle')
   };
 
   const handleLogout = () => {
@@ -106,7 +114,7 @@ const NavbarhomePage = () => {
                     alt="User"
                     className="w-8 h-8 rounded-full object-cover"
                   />
-                  <h1 className="text-md">Zefanya</h1>
+                  <h1 className="text-md">{nama}</h1>
                   <svg
                     className="w-4 h-4 text-gray-600"
                     fill="none"
